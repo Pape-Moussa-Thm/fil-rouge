@@ -1,0 +1,148 @@
+<div class="flex flex-col gap-10 h-screen shadow-xl">
+
+    <div class="h-[18%] grid grid-cols-3 shadow-lg gap-2">
+
+        <div class="col-span-1 flex flex-col shadow-lg p-2 mb-1 rounded-lg">
+            <p style="font-size: 2.5em;" class="text-center">Annee Scolaire</p>
+            <p style="font-size: 1.5em;" class="text-center">2023/2024</p>
+        </div>
+
+        <div class="col-span-2 mt-6 shadow-lg p-2 mb-1 rounded-lg">
+            <p style="font-size: 2.5em;" class="text-center">Sessions en attente de validations</p>
+        </div>
+    </div>
+
+    <div class="max-h-[70%] overflow-y-auto flex flex-col shadow-xl gap-4">
+
+        <!-- <div class="flex gap-20 justify-center items-center">
+            <div class="flex space-x-4">
+                <label class="text-2xl">Salle</label>
+                <select class="h-8">
+                    <option selected value="un">choisis une salle</option>
+                </select>
+            </div>
+            <div class="flex space-x-4">
+                <label class="text-2xl">Classe</label>
+                <select class="h-8">
+                    <option selected value="un">choisis une classe</option>
+                </select>
+            </div>
+        </div> -->
+
+        <div class="mt-10 shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-2xl text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            Date
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Début
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Fin
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Classes
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Salle
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                          Liste Absences
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let session of toValidate" class="bg-white border-b text-xl dark:bg-gray-900 dark:border-gray-700">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {{ separer(session.session.date_session) }}
+                        </th>
+                        <td class="px-6 py-4">
+                            {{ convertirEnHeures(session.session.started_at) }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ convertirEnHeures(session.session.finished_at) }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <ng-container *ngFor="let classe of session.session.classes">
+                                {{classe.libelle }}
+                            </ng-container>
+                        </td>
+                        <td class="px-6 py-4">
+                            <ng-container *ngIf="session.session.salle == null">
+                                en ligne
+                            </ng-container>
+                            <ng-container *ngIf="session.session.salle">
+                                {{session.session.salle.nom}}
+                            </ng-container>
+                        </td>
+                        <td class="px-6 py-4">
+                          <span (click)="details(session.absents)" class="bg-[#57b6f5] text-xl m-1 p-3 cursor-pointer text-white rounded-xl">
+                            details
+                          </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button [ngStyle]="{'cursor': session.absents.length == 0 ? 'not-allowed' : 'pointer'}" [disabled]="session.absents.length == 0" (click)="valider(session.session)" class="bg-[#57b6f5] text-xl m-1 p-3 cursor-pointer text-white rounded-xl">
+                                valider
+                            </button>
+                            <button [ngStyle]="{'cursor': session.absents.length > 0 ? 'not-allowed' : 'pointer'}" [disabled]="session.absents.length > 0" (click)="invalider(session.session)" class="bg-[#57b6f5] text-xl m-1 p-3 cursor-pointer text-white rounded-xl">
+                                invalider
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="flex justify-end mt-4 mb-4 mr-10">
+          <button disabled class="bg-[#57b6f5] text-white px-2 py-1 rounded-xl mr-2">Précédent</button>
+          <button class="bg-[#57b6f5] text-white px-2 py-1 rounded-xl mr-2">1</button>
+          <button disabled class="bg-[#57b6f5] text-white px-2 py-1 rounded-xl">Suivant</button>
+        </div>
+    </div>
+
+</div>
+
+<div id="modal" class="fixed hidden inset-0 flex items-center justify-center z-50">
+  <div class="modal-overlay absolute inset-0 bg-gray-500 opacity-75"></div>
+
+  <div class="modal-container bg-white dark:bg-gray-900 dark:text-gray-400 mx-auto p-6 rounded shadow-lg z-50">
+    <div class="relative overflow-x-auto">
+      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead class="text-2xl text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            <th scope="col" class="px-6 py-3">
+              Name
+            </th>
+            <th scope="col" class="px-6 py-3">
+              Email
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let eleve of absents" class="bg-white border-b text-xl dark:bg-gray-900 dark:border-gray-700">
+            <td class="px-6 py-4">
+              {{ eleve.name }}
+            </td>
+            <td class="px-6 py-4">
+              {{ eleve.email }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button (click)="closeModal()" class="modal-close absolute top-0 right-0 bg-transparent p-4">
+      <svg class="fill-current text-gray-700 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" width="18"
+        height="18" viewBox="0 0 18 18">
+        <path
+          d="M12.72 5.29a1 1 0 0 1 1.41 1.41l-4.58 4.59 4.58 4.59a1 1 0 1 1-1.41 1.41l-4.59-4.58-4.59 4.58a1 1 0 0 1-1.41-1.41l4.58-4.59-4.58-4.59a1 1 0 1 1 1.41-1.41l4.59 4.58 4.59-4.58z">
+        </path>
+      </svg>
+    </button>
+  </div>
+</div>

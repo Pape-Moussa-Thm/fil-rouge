@@ -1,0 +1,73 @@
+<!-- <button (click)="noWeeks()">no weekends</button> -->
+
+<div class="w-[123%]">
+
+    <!-- <full-calendar id="calendar" [options]="calendarOptions" [events]="calendarEvents"
+        (eventClick)="handleEventClick($event)" class="p-2 m-2 text-xl bg-blue-100 rounded-2xl">
+    </full-calendar> -->
+
+    <div id="calendar-container">
+        <div class="grid grid-cols-3">
+            <div class="cal-buttons">
+                <div class="cal-date-nav-buttons">
+                    <button id="previous" class="m-3 p-2 text-black text-xl bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate">Previous</button>
+                    <button id="today" class="m-3 p-2 text-black text-xl bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300" mwlCalendarToday [(viewDate)]="viewDate">Today</button>
+                    <button id="next" class="m-3 p-2 text-black text-xl bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate">Next</button>
+                </div>
+            </div>
+            <div class="text-xl m-4" id="cal-date-field">{{viewDate | calendarDate:(view + 'ViewTitle') : 'en'}}</div>
+            <div id="cal-view-nav-buttons">
+                <button (click)="setView('month')" class="m-3 p-2 text-black text-xl bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300" id="month">Month</button>
+                <button (click)="setView('week')" class="m-3 p-2 text-black text-xl bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300" id="week">Week</button>
+                <button (click)="setView('day')" class="m-3 p-2 text-black text-xl bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300" id="day">Day</button>
+            </div>
+        </div>
+        <span [ngSwitch]="wich">
+            <mwl-calendar-month-view [events]="calendarEvents" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)" *ngSwitchCase="'month'" [viewDate]="viewDate"></mwl-calendar-month-view>
+            <mwl-calendar-week-view (eventClicked)="eventClicked($event)" [events]="calendarEvents" *ngSwitchCase="'week'" [viewDate]="viewDate"></mwl-calendar-week-view>
+            <mwl-calendar-day-view [events]="calendarEvents" *ngSwitchCase="'day'" [viewDate]="viewDate"></mwl-calendar-day-view>
+        </span>
+    </div>
+
+    <div id="sessionModal" class="modalb bg-white shadow-2xl">
+        <div class="modal-content">
+            <span class="close" (click)="closeModal()">&times;</span>
+
+            <h2 style="font-size: 2em;" class="text-center bg-[#57b6f5] rounded-2xl text-white">Informations de la session</h2>
+
+            <ng-container *ngIf="sessionDetails">
+                <div class="m-5">
+                    <p class="p-2 m-2 text-2xl ">Date de la session : {{ sessionDetails.date_session }}</p>
+                    <p class="p-2 m-2 text-2xl ">Heure de début : {{ convertToTime(sessionDetails.started_at) }}</p>
+                    <p class="p-2 m-2 text-2xl ">Heure de fin : {{ convertToTime(sessionDetails.finished_at) }}</p>
+                    <p class="p-2 m-2 text-2xl ">Salle : {{ sessionDetails.salle.nom }}</p>
+                    <p class="p-2 m-2 text-2xl ">Durée : {{ convertToTime(sessionDetails.duration) }}</p>
+                    <p class="p-2 m-2 text-2xl ">Classes :
+                        <ng-container *ngFor="let classe of sessionDetails.classes">
+                            {{ classe.libelle }}
+                        </ng-container>
+                    </p>
+                </div>
+
+                <button (click)="annuler(sessionDetails)"
+                    class="cancel-button text-center rounded-2xl text-black mt-1 text-2xl float-right p-2 m-2 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300">
+                    Demande d'annulation
+                </button>
+            </ng-container>
+        </div>
+    </div>
+
+</div>
+
+<div id="annulationModal" class="modalc bg-white">
+    <div class="modal-conten">
+        <span class="close mr-8 mt-2" (click)="close()">&times;</span>
+        <h2 class="m-2 p-3 mt-4 rounded-2xl text-black text-2xl text-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300">Demander l'annulation</h2>
+        <textarea class="w-[90%] h-[70%] m-8 text-xl" [(ngModel)]="motif"
+            placeholder="Entrez le motif d'annulation">
+        </textarea>
+        <button (click)="annulerSession()" class="cancel-button mt-2 m-2 p-2 text-center rounded-2xl text-black mt-1 text-2xl float-right p-2 m-2 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300">
+            Envoyer
+        </button>
+    </div>
+</div>

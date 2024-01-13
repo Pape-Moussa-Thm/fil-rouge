@@ -1,0 +1,205 @@
+
+<ng-container *ngIf="display=='prof'">
+
+    <div class="flex flex-col gap-10 h-screen">
+
+        <div class="h-[18%] grid grid-cols-3 shadow-lg gap-2">
+          <div class="col-span-1 flex flex-col shadow-lg p-2 mb-1 rounded-lg">
+            <p style="font-size: 2.5em;" class="text-center">Annee Scolaire</p>
+            <p style="font-size: 1.5em;" class="text-center">2023/2024</p>
+          </div>
+
+          <div class="col-span-2 mt-6 shadow-lg p-2 mb-1 rounded-lg">
+            <p style="font-size: 2.5em;" class="text-center">Gestion Cours Professeurs</p>
+          </div>
+        </div>
+
+        <h1 class="text-4xl text-orange-500 text-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black">Professeurs disponibles</h1>
+
+        <div
+            class="max-h-[70%] overflow-y-auto grid grid-cols-1 shadow-2xl md:grid-cols-2 lg:grid-cols-3 ga2">
+            <div *ngFor="let prof of profs"
+                class="m-4 flex flex-col bg-white p-4 mb-4 rounded-lg bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black">
+                <div class="flex items-center justify-center rounded-lg flex gap-8 py-3">
+                    <!-- <div class="photo-wrapper p-2"> -->
+                        <!-- <img class="w-36 h-30 rounded-full mx-auto"
+                            [src]="'http://127.0.0.1:8000/storage/' + prof.photo" alt="ProfName"> -->
+                    <!-- </div> -->
+                    <div class=" p-2 mt-4 grid grid-cols-1 gap-4">
+                        <h3 class="text-center text-2xl text-white font-medium">
+                            {{prof.name}}
+                        </h3>
+                        <div class="text-center my-3">
+                            <span (click)="coursProf(prof)" class="cursor-pointer text-xl underline text-indigo-500 italic hover:underline hover:text-indigo-600 font-medium">
+                                View Cours
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</ng-container>
+
+<ng-container *ngIf="display=='cours'">
+
+<div class="flex flex-col gap-10 h-screen shadow-xl">
+
+    <div class="h-[18%] grid grid-cols-3 shadow-lg gap-2">
+
+        <div class="flex flex-col shadow-lg p-2 mb-1 rounded-lg">
+            <div class="">
+                <p style="font-size: 2.5em;" class="text-center">Annee Scolaire</p>
+                <p style="font-size: 1.5em;" class="text-center">2023/2024</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col shadow-lg p-2 mb-1 rounded-lg">
+            <div>
+                <h1 style="font-size: 3em;" class="mt-4 font-medium">Sessions Planifiés</h1>
+            </div>
+        </div>
+
+        <div class="flex flex-col shadow-lg p-2 mb-1 rounded-lg">
+            <div class="">
+                <p style="font-size: 2.5em;" class="text-center">Professeur</p>
+                <p style="font-size: 1.5em;" class="text-center">{{profName}}</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div *ngIf="jems" class="flex gap-14 ml-10">
+        <div>
+            <p style="font-size: 2.5em;" class="text-center">Heures Globals</p>
+            <p style="font-size: 1.5em;" class="text-center">{{convertirEnHeures(time)}}</p>
+        </div>
+        <div>
+            <p style="font-size: 2.5em;" class="text-center">Heures Restantes</p>
+            <p style="font-size: 1.5em;" class="text-center">{{convertirEnHeures(time_restant)}}</p>
+        </div>
+    </div>
+
+    <div class="max-h-[70%] overflow-y-auto grid grid-cols-1 shadow-2xl md:grid-cols-2 lg:grid-cols-3 ga2">
+        <div class=" px-10 w-[300%] shadow-xl">
+
+            <div class="flex justify-center items-center gap-6 shadow-2xl">
+                <div class="flex space-x-2">
+                    <label class="text-xl mt-2">Salle</label>
+                    <select [(ngModel)]="selectedSalle" class="text-center text-xl h-12">
+                        <option selected value="un">choisis une salle</option>
+                        <option *ngFor="let sal of salle" [value]="sal.nom">{{sal.nom}}</option>
+                    </select>
+                </div>
+                <div class="flex space-x-2">
+                    <label class="text-xl mt-2">Classe</label>
+                    <select [(ngModel)]="selectedClasse" class="text-center text-xl h-12">
+                        <option selected value="un">choisis une classe</option>
+                        <option *ngFor="let classe of classes" [value]="classe.libelle">{{classe.libelle}}</option>
+                    </select>
+                </div>
+                <div class="flex space-x-2">
+                    <label class="text-xl mt-2">Module: </label>
+                    <select (change)="recup()" [(ngModel)]="selectedModule" class="text-center text-xl h-12">
+                        <option selected value="un">choisis un module</option>
+                        <option *ngFor="let mod of modules" [value]="mod.libelle">{{mod.libelle}}</option>
+                    </select>
+                </div>
+                <div class="flex space-x-2">
+                    <label class="text-xl mt-2">Date: </label>
+                    <select [(ngModel)]="selectedDate" class="text-center text-xl h-12 w-40">
+                        <option selected value="un">choisir</option>
+                        <option value="1">recent</option>
+                        <option value="2">ancien</option>
+                    </select>
+                </div>
+
+                <div class="flex space-x-2">
+                    <label class="text-xl mt-2">Mois: </label>
+                    <select [(ngModel)]="month" class="text-center text-xl h-12 w-40">
+                        <option selected value="3">Choose an option</option>
+                        <option value="1">Mois en Cours</option>
+                        <option value="2">All months</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="relative overflow-x-auto mt-10 shadow-2xl sm:rounded-lg">
+                <table class="w-full text-sm text-left shadow-2xl text-gray-500 dark:text-gray-400">
+                    <thead class="text-2xl text-gray-700 shadow-2xl uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr class="shadow-2xl">
+                            <th scope="col" class="px-6 py-3">
+                                Date Session
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Heure Début
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Heure Fin
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Durée
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Classes
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Salle
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="shadow-2xl">
+                        <tr *ngFor="let session of allSessions | month:month | salle:selectedSalle | classe:selectedClasse | date:selectedDate | module:selectedModule "
+                            class="bg-white shadow-2xl border-b text-xl dark:bg-gray-900 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ separer(session.date_session) }}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{ convertirEnHeures(session.started_at) }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ convertirEnHeures(session.finished_at) }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ convertirEnHeures(session.duration) }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <select>
+                                    <option *ngFor="let classe of session.classes" [value]="classe.libelle">
+                                        {{classe.libelle}}
+                                    </option>
+                                </select>
+                            </td>
+                            <td class="px-6 py-4">
+                                <ng-container *ngIf="session.salle == null">
+                                    en ligne
+                                </ng-container>
+                                <ng-container *ngIf="session.salle">
+                                    {{session.salle.nom}}
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-end mt-4 mb-4 mr-10">
+              <button disabled class=" text-black px-2 py-1 rounded-xl mr-2 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300">Précédent</button>
+              <button class="bg-[#57b6f5] text-white px-2 py-1 rounded-xl mr-2">1</button>
+              <button disabled class="text-black px-2 py-1 rounded-xl bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300">Next</button>
+            </div>
+
+        </div>
+    </div>
+<div>
+    <button class="rounded-xl m-2 p-3 shadow-2xl border-2 text-black bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-100 to-gray-300"
+        (click)="allProfs()">retour au profs
+    </button>
+</div>
+</div>
+
+</ng-container>
